@@ -30,20 +30,22 @@ function pickRandomItems(array, count) {
 }
 
 function showMainMenu() {
-  console.log("\n=== Flight Reservation Menu ===");
+  console.log("\n============================");
+  console.log(" Flight Reservation Menu");
+  console.log("============================");
   console.log("1. Create Reservation");
   console.log("2. View Reservations");
   console.log("3. Update a reservation");
   console.log("4. Cancel a reservation");
   console.log("5. Exit");
-  console.log("===============================");
+  console.log("=============================");
 }
 
 
 async function main() {
   savedData()
   showMainMenu();
-  const choice = await ask("Choose an option (1-4): ");
+  const choice = await ask("Choose an option (1-5): ");
 
   switch (choice) {
     case "1":
@@ -66,8 +68,7 @@ async function main() {
       default:
         console.log("Invalid option. Please enter a number between 1 and 5.");
   }
-  
-  main();
+
 }
 
 async function createReservation() {
@@ -100,13 +101,19 @@ if (conflict) {
   console.log("Please choose again.\n");
   return createReservation();
 }
-
+let status = await ask("reservation status Y-confirmed N-cancelled (y/n): ")
+if(status.toUpperCase() ==  "Y"){
+  status =  "Comfirmed"
+}else if(status.toUpperCase() == "N"){
+  status = "Cancelled"
+};
 const reservation = {
   id: nextId++,
   name,
   flight,
   date,
   seat,
+  status
 };
 reservations.push(reservation);
 
@@ -128,12 +135,13 @@ function viewReservations() {
     return;
   }
   
-  console.log("ID | Name | Flight | Date | Seat");
+  console.log("ID | Name | Flight | Date | Seat | status");
   console.log("--------------------------------------");
   
   reservations.forEach((r) => {
-    console.log(`${r.id} | ${r.name} | ${r.flight} | ${r.date} | ${r.seat}`);
+    console.log(`${r.id} | ${r.name} | ${r.flight} | ${r.date} | ${r.seat} | ${r.status}`);
   });
+  main()
 }
 
 fs.readFile("seats.txt", "utf8", (err, data) => {
@@ -197,7 +205,7 @@ async function cancelReservation() {
 function savedData(){
   let data = ""
   reservations.forEach((item) => {
-    data += `\n${item.id} | ${item.name} | ${item.flight} | ${item.date} | ${item.seat}`;
+    data += `\n${item.id} | ${item.name} | ${item.flight} | ${item.date} | ${item.seat} | ${item.status}`;
   });
    
   fs.writeFileSync("reservation.txt" , data , (err) => {
